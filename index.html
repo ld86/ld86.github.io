@@ -1,5 +1,20 @@
 <html>
-    <body>
-        Hello.
+    <head>
+        <script>
+            function randomByte() {
+                var b = Math.floor(Math.random() * 255).toString(16)
+                while (b.length < 2) {
+                    b = "0" + b
+                }
+                return b
+            }
+
+            window.onload = function() {
+                var color = "#" + randomByte() + randomByte() + randomByte()   
+                document.getElementById("body").style.background  = color
+            }
+        </script>
+    </head>
+    <body id="body">
     </body>
 </html>
