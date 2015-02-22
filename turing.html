@@ -48,35 +48,50 @@
             var stateTable = {};
 
             var numberOfTapes = 1;
-            var fromStateOffset = 0;
-            var inputSymbolsOffset = 1;
-            var outputSymbolsOffset = inputSymbolsOffset + numberOfTapes;
-            var movementsOffset = outputSymbolsOffset + numberOfTapes;
-            var toStateOffset = movementsOffset + numberOfTapes;
             var intervalId = undefined;
+
+            function FromStateOffset() {
+                return 0;
+            }
+
+            function InputSymbolsOffset() {
+                return 1;
+            }
+
+            function OutputSymbolsOffset() {
+                return InputSymbolsOffset() + numberOfTapes;
+            }
+
+            function MovementsOffset() {
+                return OutputSymbolsOffset() + numberOfTapes;
+            }
+
+            function ToStateOffset() {
+                return MovementsOffset() + numberOfTapes;
+            }
 
             function ParseCommand(line) {
                 var splittedLine = line.split(' ');
                 var command = {};
 
-                command.fromState = splittedLine[fromStateOffset];
-                command.toState = splittedLine[toStateOffset];
+                command.fromState = splittedLine[FromStateOffset()];
+                command.toState = splittedLine[ToStateOffset()];
 
                 command.inputSymbols = [];
                 for (var i = 0; i < numberOfTapes; ++i) {
-                    command.inputSymbols.push(splittedLine[inputSymbolsOffset + i]);
+                    command.inputSymbols.push(splittedLine[InputSymbolsOffset() + i]);
                 }
                 command.inputSymbolsJoined = command.inputSymbols.join(' ');
 
                 command.outputSymbols = [];
                 for (var i = 0; i < numberOfTapes; ++i) {
-                    command.outputSymbols.push(splittedLine[outputSymbolsOffset + i]);
+                    command.outputSymbols.push(splittedLine[OutputSymbolsOffset() + i]);
                 }
                 command.outputSymbolsJoined = command.outputSymbols.join(' ');
 
                 command.movements = [];
                 for (var i = 0; i < numberOfTapes; ++i) {
-                    command.movements.push(splittedLine[movementsOffset + i]);
+                    command.movements.push(splittedLine[MovementsOffset() + i]);
                 }
                 command.movementsJoined = command.movements.join(' ');
 
@@ -114,11 +129,11 @@
 
                 for (var i = 0; i < numberOfTapes; ++i) {
                     tapes.children[i].children[0].innerHTML = ""
-                    tapes.children[i].children[1].innerHTML = ""
+                    tapes.children[i].children[1].innerHTML = "&nbsp;"
                     tapes.children[i].children[2].innerHTML = ""
                 }
 
-                var head = "";
+                var head = "&nbsp;";
                 var tail = "";
 
                 if (input.length > 0) {
@@ -135,7 +150,7 @@
                 var tapes = document.getElementById("tapes");
                 for (var i = 0; i < numberOfTapes; ++i) {
                     var symbol = tapes.children[i].children[1].innerHTML;
-                    if (symbol == " ") {
+                    if (symbol == " " || symbol == "&nbsp;") {
                         values.push('_');
                     } else {
                         values.push(symbol);
@@ -200,8 +215,6 @@
 
             function DoStep() {
                 var currentHeadValues = GetValuesFromHeads(); 
-                console.log(JSON.stringify(currentState));
-                console.log(JSON.stringify(currentHeadValues));
                 var command = stateTable[currentState][currentHeadValues.join(' ')];
                 SetValuesOnHeads(command.outputSymbols);
                 MoveHeads(command.movements);
@@ -226,6 +239,17 @@
                 var tapes = document.getElementById("tapes");
                 var newTape = tapes.children[0].cloneNode(true);
                 tapes.appendChild(newTape);
+                numberOfTapes += 1;
+            }
+
+            function RemoveTape() {
+                var tapes = document.getElementById("tapes");
+                if (numberOfTapes > 1) {
+                    var lastTape = tapes.children[tapes.children.length - 1];
+                    tapes.removeChild(lastTape);
+                    numberOfTapes -= 1;
+
+                }
             }
 
             
