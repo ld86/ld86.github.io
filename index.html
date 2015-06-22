@@ -1,49 +1,79 @@
 <html>
     <head>
+        <style>
+            body { margin: 0; padding: 0; }
+        </style>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/p5.js/0.4.5/p5.js"></script>
         <script>
-            function randomByte() {
-                var b = Math.floor(Math.random() * 255).toString(16)
-                while (b.length < 2) {
-                    b = "0" + b
+
+        var HEIGHT = window.innerHeight;
+        var WIDTH = window.innerWidth;
+
+        function Guy(x, y) {
+            this.x = x;
+            this.y = y;
+
+            this.color = color(random(255), random(255), random(255));
+            this.look = random(100);
+        }
+
+        Guy.prototype.draw = function() {
+            fill(this.color);
+            ellipse(this.x, this.y, 20, 20);
+            line(this.x, this.y, this.x + sin(this.look) * 10, this.y + cos(this.look) * 10);
+        }
+
+        Guy.prototype.stepForward = function() {
+            this.x += sin(this.look) * 3;
+            this.y += cos(this.look) * 3;
+            if (this.x > WIDTH) {
+                this.x = 1;
+            }
+            if (this.x < 0) {
+                this.x = WIDTH - 1;
+            }
+            if (this.y > HEIGHT) {
+                this.y = 1;
+            }
+            if (this.y < 0) {
+                this.y = HEIGHT - 1;
+            }
+
+
+        }
+
+        Guy.prototype.turnLeft = function() {
+            this.look += 0.1;
+        }
+
+        Guy.prototype.turnRight = function() {
+            this.look -= 0.1;
+        }
+
+        guys = []
+
+        function setup() {
+            createCanvas(WIDTH, HEIGHT);
+            frameRate(30);
+            for (var i = 0; i < 20; ++i) {
+                guys.push(new Guy(random(WIDTH), random(HEIGHT)));
+            }
+        }
+
+        function draw() {
+            background();
+            for (var i = 0; i < guys.length; ++i) {
+                var guy = guys[i];
+                guy.draw();
+                if (random() < 0.5) {
+                    guy.turnLeft();
+                } else {
+                    guy.turnRight();
                 }
-                return b
+                guy.stepForward();
             }
+        }
 
-            function randomColor() {
-                return "#" + randomByte() + randomByte() + randomByte()
-            }
-
-            window.onload = function() {
-                document.getElementById("body").style.background  = randomColor()
-            }
-
-            var split = function(event) {
-                var x = event.clientX
-                var y = event.clientY
-                var h = window.innerHeight
-                var w = window.innerWidth
-                document.body.appendChild(createDiv(0, 0, x, y))
-                document.body.appendChild(createDiv(x, 0, w - x, y))
-                document.body.appendChild(createDiv(0, y, x, h - y))
-                document.body.appendChild(createDiv(x, y, w - x, h - y))
-
-            }
-
-            function createDiv(x, y, w, h) {
-                elem = document.createElement("div")
-                elem.style.padding = 0
-                elem.style.margin = 0
-                elem.style.width = w
-                elem.style.height = h
-                elem.style.background = randomColor()
-                elem.style.position = "fixed"
-                elem.style.top = y
-                elem.style.left = x
-                elem.onclick = split
-                return elem
-            }
-
-            window.onclick = split
         </script>
     </head>
     <body id="body">
