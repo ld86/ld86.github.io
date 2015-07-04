@@ -3,7 +3,8 @@
         <style>
             body { margin: 0; padding: 0; }
         </style>
-        <script src="http://cdnjs.cloudflare.com/ajax/libs/p5.js/0.4.5/p5.js"></script>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/p5.js/0.4.6/p5.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.4.6/addons/p5.dom.js"></script>
         <script>
 
         function Game() {
@@ -13,8 +14,9 @@
                           [2, 2, 2],
                           [2, 2, 2]]
 
-            noFill()
+            fill(255)
             rect(0, 0, 299, 299)
+            noFill()
             rect(0, 0, 299, 199)
             rect(0, 0, 299, 99)
             rect(0, 0, 199, 299)
@@ -79,7 +81,7 @@
             var who = this.checkWin();
             if (who != 2) {
                 alert(who);
-                end = true;
+                this.ended = true;
             }
 
             this.turn = 1 - this.turn;
@@ -90,10 +92,10 @@
         }
 
         Robot.prototype.makeTurn = function() {
-            for (var i = 0; i < 2; ++i) {
-                for (var j = 0; j < 2; ++j) {
-                    if (game.field[i][j] == 2) {
-                        game.makeTurn(i, j);
+            for (var i = 0; i < 3; ++i) {
+                for (var j = 0; j < 3; ++j) {
+                    if (this.game.field[i][j] == 2) {
+                        this.game.makeTurn(i, j);
                         return;
                     }
                 }
@@ -107,14 +109,37 @@
             createCanvas(600, 300);
             game = new Game()
             robot = new Robot(game)
+
+            button = createButton('Next game');
+            button.position(310, 10);
+            button.mousePressed(nextGame);
+        }
+
+        function nextGame() {
+            game = new Game()
+            robot = new Robot(game)
         }
 
         function mouseClicked() {
+            if (mouseX > 300 || mouseY > 300) {
+                return false;
+            }
             column = int(mouseX / 100);
             row = int(mouseY / 100);
             game.makeTurn(row, column);
             robot.makeTurn()
+
+            drawStats();
+
             return false;
+        }
+
+        function drawStats() {
+            fill(255)
+            rect(299, 0, 300, 300)
+            fill(0)
+            text(game.field, 310, 50)
+            noFill()
         }
 
         function draw() {
