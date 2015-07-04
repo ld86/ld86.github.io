@@ -113,6 +113,9 @@
             function ParseSource(source, stateTable) {
                 var lines = source.split('\n');
                 for (var i = 0; i < lines.length; ++i) {
+                    if (lines[i][0] == ';') {
+                        continue;
+                    }
                     var command = ParseCommand(lines[i]);
                     AddCommandToTable(command, stateTable)
                 }
@@ -120,6 +123,7 @@
 
             function ResetMachine() {
                 PauseMachine();
+
                 var input = document.getElementById("inputs").children[0].value;
                 var source = document.getElementById("source").value
                 var tapes = document.getElementById("tapes");
