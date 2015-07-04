@@ -6,31 +6,29 @@
         <script src="http://cdnjs.cloudflare.com/ajax/libs/p5.js/0.4.5/p5.js"></script>
         <script>
 
-        var turn = 0
-        var end = false;
-        var field = [
-                     [2, 2, 2],
-                     [2, 2, 2],
-                     [2, 2, 2]
-                    ]
+        function Game() {
+            this.ended = false;
+            this.turn = 0;
+            this.field = [[2, 2, 2],
+                          [2, 2, 2],
+                          [2, 2, 2]]
 
-        function setup() {
-            createCanvas(600, 300);
             noFill()
             rect(0, 0, 299, 299)
             rect(0, 0, 299, 199)
             rect(0, 0, 299, 99)
             rect(0, 0, 199, 299)
             rect(0, 0, 99, 299)
+
         }
 
-        function checkWin() {
+        Game.prototype.checkWin = function() {
             for (var i = 0; i < 3; ++i) {
                 var rows = [0, 0, 0];
                 var columns = [0, 0, 0];
                 for (var j = 0; j < 3; ++j) {
-                    rows[field[i][j]]++;
-                    columns[field[j][i]]++;
+                    rows[this.field[i][j]]++;
+                    columns[this.field[j][i]]++;
                 }
                 if (rows[0] == 3 || columns[0] == 3) {
                     return 0;
@@ -44,8 +42,8 @@
             var inv_diag = [0, 0, 0];
 
             for (var i = 0; i < 3; ++i) {
-                diag[field[i][i]]++;
-                inv_diag[field[2 - i][i]]++;
+                diag[this.field[i][i]]++;
+                inv_diag[this.field[2 - i][i]]++;
             }
             if (diag[0] == 3 || inv_diag[0] == 3) {
                 return 0;
@@ -54,14 +52,15 @@
                 return 1;
             }
             return 2;
+         
         }
 
-        function makeTurn(column, row) {
-            if (end || field[row][column] != 2) {
-                return false;
+        Game.prototype.makeTurn = function(row, column) {
+            if (this.ended || this.field[row][column] != 2) {
+                return;
             }
 
-            if (turn == 0) {
+            if (this.turn == 0) {
                 ellipse(100 * column + 50, 100 * row + 50, 50, 50);
             } else {
                 line(100 * column + 10,
@@ -75,21 +74,46 @@
                      100 * (row + 1) - 10);
             }
             
-            field[row][column] = turn;
+            this.field[row][column] = this.turn;
 
-            var who = checkWin();
+            var who = this.checkWin();
             if (who != 2) {
                 alert(who);
                 end = true;
             }
 
-            turn = 1 - turn;
+            this.turn = 1 - this.turn;
+        }
+
+        function Robot(game) {
+            this.game = game
+        }
+
+        Robot.prototype.makeTurn = function() {
+            for (var i = 0; i < 2; ++i) {
+                for (var j = 0; j < 2; ++j) {
+                    if (game.field[i][j] == 2) {
+                        game.makeTurn(i, j);
+                        return;
+                    }
+                }
+            }
+        }
+
+        var game = undefined
+        var robot = undefined
+
+        function setup() {
+            createCanvas(600, 300);
+            game = new Game()
+            robot = new Robot(game)
         }
 
         function mouseClicked() {
             column = int(mouseX / 100);
             row = int(mouseY / 100);
-            makeTurn(column, row);
+            game.makeTurn(row, column);
+            robot.makeTurn()
             return false;
         }
 
