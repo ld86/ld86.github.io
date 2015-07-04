@@ -7,10 +7,11 @@
         <script>
 
         var turn = 0
+        var end = false;
         var field = [
-                     [-1, -1, -1],
-                     [-1, -1, -1],
-                     [-1, -1, -1]
+                     [2, 2, 2],
+                     [2, 2, 2],
+                     [2, 2, 2]
                     ]
 
         function setup() {
@@ -23,8 +24,40 @@
             rect(0, 0, 99, 299)
         }
 
+        function checkWin() {
+            for (var i = 0; i < 3; ++i) {
+                var rows = [0, 0, 0];
+                var columns = [0, 0, 0];
+                for (var j = 0; j < 3; ++j) {
+                    rows[field[i][j]]++;
+                    columns[field[j][i]]++;
+                }
+                if (rows[0] == 3 || columns[0] == 3) {
+                    return 0;
+                }
+                if (rows[1] == 3 || columns[1] == 3) {
+                    return 1;
+                }
+            }
+
+            var diag = [0, 0, 0];
+            var inv_diag = [0, 0, 0];
+
+            for (var i = 0; i < 3; ++i) {
+                diag[field[i][i]]++;
+                inv_diag[field[2 - i][i]]++;
+            }
+            if (diag[0] == 3 || inv_diag[0] == 3) {
+                return 0;
+            }
+            if (diag[1] == 3 || inv_diag[1] == 3) {
+                return 1;
+            }
+            return 2;
+        }
+
         function makeTurn(column, row) {
-            if (field[row][column] != -1) {
+            if (end || field[row][column] != 2) {
                 return false;
             }
 
@@ -43,6 +76,13 @@
             }
             
             field[row][column] = turn;
+
+            var who = checkWin();
+            if (who != 2) {
+                alert(who);
+                end = true;
+            }
+
             turn = 1 - turn;
         }
 
