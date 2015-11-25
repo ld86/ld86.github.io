@@ -1,0 +1,51 @@
+<html>
+    <head>
+        <script>
+            function randomByte() {
+                var b = Math.floor(Math.random() * 255).toString(16)
+                while (b.length < 2) {
+                    b = "0" + b
+                }
+                return b
+            }
+
+            function randomColor() {
+                return "#" + randomByte() + randomByte() + randomByte()
+            }
+
+            window.onload = function() {
+                document.getElementById("body").style.background  = randomColor()
+            }
+
+            var split = function(event) {
+                var x = event.clientX
+                var y = event.clientY
+                var h = window.innerHeight
+                var w = window.innerWidth
+                document.body.appendChild(createDiv(0, 0, x, y))
+                document.body.appendChild(createDiv(x, 0, w - x, y))
+                document.body.appendChild(createDiv(0, y, x, h - y))
+                document.body.appendChild(createDiv(x, y, w - x, h - y))
+
+            }
+
+            function createDiv(x, y, w, h) {
+                elem = document.createElement("div")
+                elem.style.padding = 0
+                elem.style.margin = 0
+                elem.style.width = w
+                elem.style.height = h
+                elem.style.background = randomColor()
+                elem.style.position = "fixed"
+                elem.style.top = y
+                elem.style.left = x
+                elem.onclick = split
+                return elem
+            }
+
+            window.onclick = split
+        </script>
+    </head>
+    <body id="body">
+    </body>
+</html>

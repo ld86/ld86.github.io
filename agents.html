@@ -1,0 +1,81 @@
+<html>
+    <head>
+        <style>
+            body { margin: 0; padding: 0; }
+        </style>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/p5.js/0.4.5/p5.js"></script>
+        <script>
+
+        var HEIGHT = window.innerHeight;
+        var WIDTH = window.innerWidth;
+
+        function Guy(x, y) {
+            this.x = x;
+            this.y = y;
+
+            this.color = color(random(255), random(255), random(255));
+            this.look = random(100);
+        }
+
+        Guy.prototype.draw = function() {
+            fill(this.color);
+            ellipse(this.x, this.y, 20, 20);
+            line(this.x, this.y, this.x + sin(this.look) * 10, this.y + cos(this.look) * 10);
+        }
+
+        Guy.prototype.stepForward = function() {
+            this.x += sin(this.look) * 3;
+            this.y += cos(this.look) * 3;
+            if (this.x > WIDTH) {
+                this.x = 1;
+            }
+            if (this.x < 0) {
+                this.x = WIDTH - 1;
+            }
+            if (this.y > HEIGHT) {
+                this.y = 1;
+            }
+            if (this.y < 0) {
+                this.y = HEIGHT - 1;
+            }
+
+
+        }
+
+        Guy.prototype.turnLeft = function() {
+            this.look += 0.1;
+        }
+
+        Guy.prototype.turnRight = function() {
+            this.look -= 0.1;
+        }
+
+        guys = []
+
+        function setup() {
+            createCanvas(WIDTH, HEIGHT);
+            frameRate(30);
+            for (var i = 0; i < 20; ++i) {
+                guys.push(new Guy(random(WIDTH), random(HEIGHT)));
+            }
+        }
+
+        function draw() {
+            background();
+            for (var i = 0; i < guys.length; ++i) {
+                var guy = guys[i];
+                guy.draw();
+                if (random() < 0.5) {
+                    guy.turnLeft();
+                } else {
+                    guy.turnRight();
+                }
+                guy.stepForward();
+            }
+        }
+
+        </script>
+    </head>
+    <body id="body">
+    </body>
+</html>

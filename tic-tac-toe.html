@@ -1,0 +1,152 @@
+<html>
+    <head>
+        <style>
+            body { margin: 0; padding: 0; }
+        </style>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/p5.js/0.4.6/p5.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.4.6/addons/p5.dom.js"></script>
+        <script>
+
+        function Game() {
+            this.ended = false;
+            this.turn = 0;
+            this.field = [[2, 2, 2],
+                          [2, 2, 2],
+                          [2, 2, 2]]
+
+            fill(255)
+            rect(0, 0, 299, 299)
+            noFill()
+            rect(0, 0, 299, 199)
+            rect(0, 0, 299, 99)
+            rect(0, 0, 199, 299)
+            rect(0, 0, 99, 299)
+
+        }
+
+        Game.prototype.checkWin = function() {
+            for (var i = 0; i < 3; ++i) {
+                var rows = [0, 0, 0];
+                var columns = [0, 0, 0];
+                for (var j = 0; j < 3; ++j) {
+                    rows[this.field[i][j]]++;
+                    columns[this.field[j][i]]++;
+                }
+                if (rows[0] == 3 || columns[0] == 3) {
+                    return 0;
+                }
+                if (rows[1] == 3 || columns[1] == 3) {
+                    return 1;
+                }
+            }
+
+            var diag = [0, 0, 0];
+            var inv_diag = [0, 0, 0];
+
+            for (var i = 0; i < 3; ++i) {
+                diag[this.field[i][i]]++;
+                inv_diag[this.field[2 - i][i]]++;
+            }
+            if (diag[0] == 3 || inv_diag[0] == 3) {
+                return 0;
+            }
+            if (diag[1] == 3 || inv_diag[1] == 3) {
+                return 1;
+            }
+            return 2;
+         
+        }
+
+        Game.prototype.makeTurn = function(row, column) {
+            if (this.ended || this.field[row][column] != 2) {
+                return;
+            }
+
+            if (this.turn == 0) {
+                ellipse(100 * column + 50, 100 * row + 50, 50, 50);
+            } else {
+                line(100 * column + 10,
+                     100 * row + 10, 
+                     100 * (column + 1) - 10, 
+                     100 * (row + 1) - 10);
+
+                line(100 * (column + 1) - 10, 
+                     100 * row + 10, 
+                     100 * column + 10,
+                     100 * (row + 1) - 10);
+            }
+            
+            this.field[row][column] = this.turn;
+
+            var who = this.checkWin();
+            if (who != 2) {
+                alert(who);
+                this.ended = true;
+            }
+
+            this.turn = 1 - this.turn;
+        }
+
+        function Robot(game) {
+            this.game = game
+        }
+
+        Robot.prototype.makeTurn = function() {
+            for (var i = 0; i < 3; ++i) {
+                for (var j = 0; j < 3; ++j) {
+                    if (this.game.field[i][j] == 2) {
+                        this.game.makeTurn(i, j);
+                        return;
+                    }
+                }
+            }
+        }
+
+        var game = undefined
+        var robot = undefined
+
+        function setup() {
+            createCanvas(600, 300);
+            game = new Game()
+            robot = new Robot(game)
+
+            button = createButton('Next game');
+            button.position(310, 10);
+            button.mousePressed(nextGame);
+        }
+
+        function nextGame() {
+            game = new Game()
+            robot = new Robot(game)
+        }
+
+        function mouseClicked() {
+            if (mouseX > 300 || mouseY > 300) {
+                return false;
+            }
+            column = int(mouseX / 100);
+            row = int(mouseY / 100);
+            game.makeTurn(row, column);
+            robot.makeTurn()
+
+            drawStats();
+
+            return false;
+        }
+
+        function drawStats() {
+            fill(255)
+            rect(299, 0, 300, 300)
+            fill(0)
+            text(game.field, 310, 50)
+            noFill()
+        }
+
+        function draw() {
+        }
+
+        </script>
+    </head>
+    <body id="body">
+    </body>
+</html>
