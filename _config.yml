@@ -1,8 +1,7 @@
 # Site settings
 title: ld86's blog
 email: teh.ld86@gmail.com
-description: > # this means to ignore newlines until "baseurl:"
-  When programmer meets machine learning.
+description: When C++ programmer meets machine learning.
 baseurl: "" # the subpath of your site, e.g. /blog/
 url: "http://ld86.github.io" # the base hostname & protocol for your site
 twitter_username: ld_86
