@@ -1,7 +1,7 @@
 # Site settings
 title: ld86's blog
 email: teh.ld86@gmail.com
-description: Weird things happen when C++ programmer meets machine learning.
+description: Weird things happen when C++ programmer meets machine learning world.
 baseurl: "" # the subpath of your site, e.g. /blog/
 url: "http://ld86.github.io" # the base hostname & protocol for your site
 twitter_username: ld_86
